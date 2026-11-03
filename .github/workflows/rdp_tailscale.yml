@@ -33,3 +33,4 @@ jobs:
         echo "MAT KHAU RDP: $Password"
         echo "Thanh cong! Hay mo app Tailscale tren dien thoai de lay IP."
         echo "===================================================="
+        
