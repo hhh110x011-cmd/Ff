@@ -9,18 +9,9 @@ jobs:
     timeout-minutes: 360
 
     steps:
-    - name: 1. Tai va cai dat Tailscale ban MSI chinh xac
+    - name: 1. Cai dat Tailscale he thong qua Choco
       run: |
-        $url = "https://tailscale.com"
-        $output = "tailscale.msi"
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        Invoke-WebRequest -Uri $url -OutFile $output -TimeoutSec 60
-        if (Test-Path $output) {
-          Start-Process -FilePath "msiexec.exe" -ArgumentList "/i tailscale.msi /qn /norestart" -Wait
-        } else {
-          Write-Error "Khong the tai file cai dat Tailscale."
-          exit 1
-        }
+        choco install tailscale -y --no-progress
         
     - name: 2. Ket noi May ao vao mang Tailscale cua ban
       run: |
@@ -42,3 +33,4 @@ jobs:
         echo "MAT KHAU RDP: $Password"
         echo "Thanh cong! Hay mo app Tailscale tren dien thoai de lay IP."
         echo "===================================================="
+        
