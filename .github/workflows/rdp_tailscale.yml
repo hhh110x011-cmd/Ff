@@ -1,0 +1,35 @@
+name: Windows-11-Tailscale-RDP
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 360
+
+    steps:
+    - name: 1. Tai va cai dat Tailscale tren May ao
+      run: |
+        Invoke-WebRequest -Uri "https://tailscale.com" -OutFile "tailscale-setup.exe"
+        Start-Process -FilePath "tailscale-setup.exe" -ArgumentList "/quiet" -Wait
+        
+    - name: 2. Ket noi May ao vao mang Tailscale cua ban
+      run: |
+        & "C:\Program Files\Tailscale\tailscale.exe" up --authkey=${{ secrets.TAILSCALE_AUTH_KEY }}
+        
+    - name: 3. Kich hoat Remote Desktop (RDP) tren Windows
+      run: |
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
+        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
+        
+    - name: 4. Dien thong tin tai khoan
+      run: |
+        $User = "runneradmin"
+        $Password = "Win11Tailscale2026!"
+        echo "===================================================="
+        echo "TAI KHOAN RDP: $User"
+        echo "MAT KHAU RDP: $Password"
+        echo "Thanh cong! Hay mo app Tailscale tren dien thoai de lay IP."
+        echo "===================================================="
