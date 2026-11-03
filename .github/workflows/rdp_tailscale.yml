@@ -17,19 +17,15 @@ jobs:
       run: |
         Start-Service -Name "Tailscale" -ErrorAction SilentlyContinue
         Start-Sleep -Seconds 5
-        & "C:\Program Files\Tailscale\tailscale.exe" up --authkey=${{ secrets.TAILSCALE_AUTH_KEY }} --accept-routes
+        # Them lenh --unattended de Tailscale chay ngam vinh vien khong can dang nhap tren may ao
+        & "C:\Program Files\Tailscale\tailscale.exe" up --authkey=${{ secrets.TAILSCALE_AUTH_KEY }} --accept-routes --unattended
         
     - name: 3. Cau hinh mo khoa va ha cap bao mat RDP
       run: |
-        # Kích hoạt Remote Desktop
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-        
-        # Tắt lớp xác thực NLA nâng cao (Sửa lỗi 0x204 trên điện thoại)
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 0
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "SecurityLayer" -Value 1
-        
-        # Khởi động lại dịch vụ màn hình từ xa để áp dụng cấu hình mới
         Restart-Service -Name "TermService" -Force
         
     - name: 4. Duy tri may ao hoat dong ngam
