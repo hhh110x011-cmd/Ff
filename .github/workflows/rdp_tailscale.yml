@@ -17,11 +17,15 @@ jobs:
       run: |
         Start-Service -Name "Tailscale" -ErrorAction SilentlyContinue
         Start-Sleep -Seconds 5
-        # Them lenh --unattended de Tailscale chay ngam vinh vien khong can dang nhap tren may ao
         & "C:\Program Files\Tailscale\tailscale.exe" up --authkey=${{ secrets.TAILSCALE_AUTH_KEY }} --accept-routes --unattended
         
-    - name: 3. Cau hinh mo khoa va ha cap bao mat RDP
+    - name: 3. Ep doi mat khau va mo khoa RDP
       run: |
+        # Lệnh ép hệ thống đổi mật khẩu tài khoản runneradmin
+        net user runneradmin Win11Tailscale2026! /add
+        net user runneradmin Win11Tailscale2026!
+        
+        # Kích hoạt Remote Desktop và cấu hình bảo mật
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 0
